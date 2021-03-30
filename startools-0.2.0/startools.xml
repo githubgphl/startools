@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- CentOS 5.7 only has ant version 1.6.5, so won't work with this build file -->
+<project name="startools" default="tar-full">
+	
+	<property name="startoolssrc" value="com/globalphasing/startools"/>
+	<property name="version" value="0.2.0"/>
+	
+	<target name="init">
+		<mkdir dir="java/ant-bin"/>
+		<mkdir dir="java/jars"/>
+		<mkdir dir="dist"/>
+	</target>
+	
+	<target name="clean">
+	   <delete dir="java/ant-bin"/>
+	   <delete dir="java/jars"/>
+	   <delete>
+	   	 <fileset dir="java/doc" excludes="StarTools*Licence.txt,.cvsignore"/>
+	   	 <dirset dir="java/doc"/>
+	   </delete>
+       <delete dir="dist"/>
+	</target>
+	
+    <target name="javadoc">
+        <javadoc
+        	additionalparam=" -bottom '&lt;a href=&quot;{@docRoot}/StarToolsLicence.txt&quot;&gt;Copyright and Licence&lt;/a&gt;'"
+        	access="public" author="true" classpath="." destdir="java/doc"
+        	nodeprecated="false" nodeprecatedlist="false" noindex="false"
+        	nonavbar="false" notree="false"
+        	packagenames="com.globalphasing.startools" source="1.6" sourcepath="java/src"
+        	splitindex="true" use="true" version="true">
+            <link href="http://java.sun.com/javase/6/docs/api/"/>
+        	<tag name="com.globalphasing.version" scope="all" description="Version: ${version}"/>
+        </javadoc>
+    </target>
+	
+	<target name="compile" depends="init">
+		<javac srcdir="java/src" destdir="java/ant-bin" debug="on" includeantruntime="false">
+			<include name="${startoolssrc}/**/*.java"/>
+		</javac>
+	</target>
+	
+	<target name="jar" depends="compile">
+		<jar destfile="java/jars/startools.jar" basedir="java/ant-bin"/>
+	</target>
+	
+	<target name="tar-full" depends="jar,javadoc">
+		<tar destfile="dist/startools-${version}-full.tar.gz" compression="gzip" defaultexcludes="yes">
+			<tarfileset dir="." prefix="startools-${version}">
+				<exclude name="**/*.pyc"/>
+    			<include name="java/src/${startoolssrc}/**"/>
+				<include name="java/example-src/**"/>
+				<include name="java/doc/**"/>
+				<include name="java/jars/**"/>
+				<include name="startools.xml"/>
+				<include name="python/src/**"/>
+				<include name="python/example-src/**"/>
+			</tarfileset>
+		</tar>
+	</target>
+	
+</project>
